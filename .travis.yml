@@ -18,7 +18,14 @@ after_success:
   - docker build -t dakporhonor/multi-nginx ./nginx
   - docker build -t dakporhonor/multi-worker ./worker
   - docker build -t dakporhonor/multi-server ./server
-
+# LOGIN to DOCKER CLI 
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+# PUSH our images to dockerhub
+  - docker push dakporhonor/multi-client
+  - docker push dakporhonor/multi-nginx
+  - docker push dakporhonor/multi-worker
+  - docker push dakporhonor/multi-server
+   
 # deploy:
 #   provider: elasticbeanstalk
 #   region: us-east-1
