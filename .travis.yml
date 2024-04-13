@@ -1,0 +1,32 @@
+sudo: required
+
+services:
+  - docker
+
+before_install: 
+# Build a test version and run test.
+# We use test version because have access to all the dependencies (dev) to run test
+  - docker build -t dakporhonor/client-test -f ./client/Dockerfile.dev ./client
+
+script: 
+# Override default command to run test
+  - docker run -e CI=true dakporhonor/client-test npm run test -- --coverage
+
+after_success:
+# We do not have to specify the Dockerfile. It will use the default. We specify only the build context
+  - docker build -t dakporhonor/multi-client ./client
+  - docker build -t dakporhonor/multi-nginx ./nginx
+  - docker build -t dakporhonor/multi-worker ./worker
+  - docker build -t dakporhonor/multi-server ./server
+
+# deploy:
+#   provider: elasticbeanstalk
+#   region: us-east-1
+#   app: client
+#   env: client-env
+#   bucket_name: "elasticbeanstalk-us-east-1-837549381903"
+#   bucket_path: client
+#   on:
+#     branch: main
+#   access_key_id: "$AWS_ACCESS_KEY"
+#   secret_access_key: "$AWS_SECRET_KEY"
