@@ -1,0 +1,33 @@
+apiVersion: apps/v1  # The API version of the Kubernetes resource. `apps/v1` indicates it's a Deployment resource in the `apps` API group and the `v1` version.
+kind: Deployment  # The type of Kubernetes resource. In this case, it's a Deployment.
+metadata:
+  name: postgres-deployment  # The name of the Deployment resource.
+spec:
+  replicas: 1  # The desired number of pod replicas to run for this Deployment.
+  selector:  # Selector to identify the pods controlled by this Deployment.
+    matchLabels:
+      component: postgres  # Selector to match pods with labels having `component: postgres`.
+  template:  # Template for creating new pods managed by this Deployment.
+    metadata:
+      labels:
+        component: postgres  # Labels applied to pods created from this template.
+    spec:
+      volumes:  # Volumes to be mounted into the pods created from this template.
+        - name: postgres-storage  # Name of the volume.
+          persistentVolumeClaim:  # Specifies that the volume is backed by a PersistentVolumeClaim (PVC).
+            claimName: database-pvc  # Name of the PersistentVolumeClaim to use.
+      containers:  # List of containers to run in the pods created from this template.
+        - name: postgres  # Name of the container.
+          image: postgres  # Docker image to use for the container.
+          ports:
+            - containerPort: 5432  # Port to expose on the container.
+          volumeMounts:  # Mount points for volumes inside the container.
+            - name: postgres-storage  # Name of the volume.
+              mountPath: /var/lib/postgresql/data  # Path within the container where the volume should be mounted.
+              subPath: postgres  # Sub-path within the volume to mount into the container.
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                 secretKeyRef:
+                  name: pgpassword
+                  key: PGPASSWORD

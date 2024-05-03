@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-pvc  # The name of the PersistentVolumeClaim.
+spec:
+  accessModes:
+    - ReadWriteOnce  # Defines the access mode for the PersistentVolumeClaim. In this case, it allows read-write access by a single node.
+  resources:
+    requests:
+      storage: 2Gi  # Requests a storage capacity of 2Gi (2 gigabytes) for the PersistentVolumeClaim.

@@ -1,0 +1,23 @@
+apiVersion: apps/v1  # The API version of the Kubernetes resource. `apps/v1` indicates it's a Deployment resource in the `apps` API group and the `v1` version.
+kind: Deployment  # The type of Kubernetes resource. In this case, it's a Deployment.
+metadata:
+  name: worker-deployment  # The name of the Deployment resource.
+spec:
+  replicas: 1  # The desired number of pod replicas to run for this Deployment.
+  selector:  # Selector to identify the pods controlled by this Deployment.
+    matchLabels:
+      component: worker  # Selector to match pods with labels having `component: web`.
+  template:  # Template for creating new pods managed by this Deployment.
+    metadata:
+      labels:
+        component: worker  # Labels applied to pods created from this template.
+    spec:
+      containers:  # List of containers to run in the pods created from this template.
+        - name: worker  # Name of the container.
+          image: dakporhonor/multi-worker  # Docker image to use for the container.
+          env:
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service
+            - name: REDIS_PORT
+              value: "6379"
+
